@@ -37,7 +37,7 @@ app.use(methodOverride('_method'))
 //Find
 app.get('/', (req, res) => {
     Books
-        .find()
+        .find(req.query)
         .sort({book: 1})
         .then((books) => res.render(createPath('books'), { "books":books, "title": title  }))
         .catch((error) => {
