@@ -81,10 +81,12 @@ app.put('/editBook/:id', (req, res) => {
 
 // Add Book
 app.get('/addBook', (req, res) => {
+    const error = req.query.hasOwnProperty("error") ? req.query["error"] : "";
+    console.log(error)
     Books
         .find()
         .sort({ book: 1 })
-        .then((books) => res.render(createPath('addBook'), { "books": books, "title": title }))
+        .then((books) => res.render(createPath('addBook'), { "books": books, "title": title, "error": error }))
         .catch((error) => {
             console.log(error);
         })
@@ -92,7 +94,6 @@ app.get('/addBook', (req, res) => {
 
 app.post('/addBook', (req, res) => {
     const { id, name, author, isbn, price, amt } = req.body;
-    console.log(isbn)
     Books.find({ "isbn": isbn }, function (err, results) {
         if (err) { console.log(err) }
         if (!results.length) {
@@ -102,11 +103,11 @@ app.post('/addBook', (req, res) => {
                 .then((result) => res.redirect('/'))
                 .catch((error) => {
                     console.log(error);
-                    res.redirect('/')
+                    res.redirect('/addBook?error=unknown error')
                 })
 
         }else{
-            res.redirect('/addBook')
+            res.redirect('/addBook?error=There is book with this ISBN')
         }
     })
 });

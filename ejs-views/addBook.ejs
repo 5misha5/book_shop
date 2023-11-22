@@ -16,9 +16,15 @@
 
         <%- include('./partials/nav.ejs') %>
             <hr>
+
             <h1>
                 <%= title %>
             </h1>
+
+            <% if(error){ %>
+                <p class="text-danger"><%= error %></p>
+             <% } %>
+
             <form class="container-fluid justify-content-start" method="post" action="/addBook">
 
                 <label for="name" class="form-label">Name</label>
