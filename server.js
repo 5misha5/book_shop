@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
     Books
         .find()
         .sort({book: 1})
-        .then((books) => res.render(createPath('find'), { "books":books, "title": title  }))
+        .then((books) => res.render(createPath('books'), { "books":books, "title": title  }))
         .catch((error) => {
             console.log(error);
         })
@@ -51,9 +51,17 @@ app.post('/', (req, res) => {
   emails
       .save()
       .then((result) => res.redirect('/'))
-      .catch((error) => {
-    console.log(error);
-  })
+});
+
+app.delete('/:id', (req, res) => {
+    Books
+        .findByIdAndDelete(req.params.id)
+        .then((result) => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 });
 
 
@@ -80,27 +88,27 @@ app.put('/editBook/:id', (req, res) => {
 
 
 
-// All Books
-app.get('/allBooks', (req, res) => {
-    Books
-        .find()
-        .sort({book: 1})
-        .then((books) => res.render(createPath('allBooks'), { "books":books, "title": title  }))
-        .catch((error) => {
-            console.log(error);
-        })
-});
+// // All Books
+// app.get('/allBooks', (req, res) => {
+//     Books
+//         .find()
+//         .sort({book: 1})
+//         .then((books) => res.render(createPath('allBooks'), { "books":books, "title": title  }))
+//         .catch((error) => {
+//             console.log(error);
+//         })
+// });
 
-app.delete('/allBooks/:id', (req, res) => {
-    Books
-        .findByIdAndDelete(req.params.id)
-        .then((result) => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-});
+// app.delete('/allBooks/:id', (req, res) => {
+//     Books
+//         .findByIdAndDelete(req.params.id)
+//         .then((result) => {
+//             res.sendStatus(200);
+//         })
+//         .catch((error) => {
+//             console.log(error);
+//         })
+// });
 
 
 // Add Book
