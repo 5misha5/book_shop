@@ -24,10 +24,10 @@ mongoose
 const createPath = (page) => path.resolve(__dirname, 'ejs-views', `${page}.ejs`);
 
 app.listen(PORT, (error) => {
-  error ? console.log(error) : console.log(`listening port ${PORT}`);
+    error ? console.log(error) : console.log(`listening port ${PORT}`);
 });
 
-app.use(express.urlencoded({ extended: false}))
+app.use(express.urlencoded({ extended: false }))
 
 app.use(express.static('styles'));
 
@@ -38,19 +38,11 @@ app.use(methodOverride('_method'))
 app.get('/', (req, res) => {
     Books
         .find(req.query)
-        .sort({book: 1})
-        .then((books) => res.render(createPath('books'), { "books":books, "title": title  }))
+        .sort({ book: 1 })
+        .then((books) => res.render(createPath('books'), { "books": books, "title": title }))
         .catch((error) => {
             console.log(error);
         })
-});
-
-app.post('/', (req, res) => {
-    const { id, name, author, isbn, price, amt } = req.body;
-  const emails = new Books({id, name, author, isbn, price, amt});
-  emails
-      .save()
-      .then((result) => res.redirect('/'))
 });
 
 app.delete('/:id', (req, res) => {
@@ -69,7 +61,7 @@ app.delete('/:id', (req, res) => {
 app.get('/editBook/:id', (req, res) => {
     Books
         .findById(req.params.id)
-        .then(books => res.render(createPath('editBook'), {books}))
+        .then(books => res.render(createPath('editBook'), { books }))
         .catch((error) => {
             console.log(error);
         });
@@ -79,7 +71,7 @@ app.put('/editBook/:id', (req, res) => {
     const { name, author, isbn, price, amt } = req.body;
     const { id } = req.params;
     Books
-        .findByIdAndUpdate(id, {name, author, isbn, price, amt})
+        .findByIdAndUpdate(id, { name, author, isbn, price, amt })
         .then(result => res.redirect('/'))
         .catch((error) => {
             console.log(error);
@@ -91,8 +83,8 @@ app.put('/editBook/:id', (req, res) => {
 app.get('/addBook', (req, res) => {
     Books
         .find()
-        .sort({book: 1})
-        .then((books) => res.render(createPath('addBook'), { "books":books, "title": title  }))
+        .sort({ book: 1 })
+        .then((books) => res.render(createPath('addBook'), { "books": books, "title": title }))
         .catch((error) => {
             console.log(error);
         })
@@ -100,11 +92,21 @@ app.get('/addBook', (req, res) => {
 
 app.post('/addBook', (req, res) => {
     const { id, name, author, isbn, price, amt } = req.body;
-  const books = new Books({id, name, author, isbn, price, amt});
-  books
-      .save()
-      .then((result) => res.redirect('/'))
-      .catch((error) => {
-    console.log(error);
-  })
+    console.log(isbn)
+    Books.find({ "isbn": isbn }, function (err, results) {
+        if (err) { console.log(err) }
+        if (!results.length) {
+            const books = new Books({ id, name, author, isbn, price, amt });
+            books
+                .save()
+                .then((result) => res.redirect('/'))
+                .catch((error) => {
+                    console.log(error);
+                    res.redirect('/')
+                })
+
+        }else{
+            res.redirect('/addBook')
+        }
+    })
 });

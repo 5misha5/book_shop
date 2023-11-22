@@ -19,22 +19,22 @@
             <h1>
                 <%= title %>
             </h1>
-            <form class="container-fluid justify-content-start" method="post" action="/">
+            <form class="container-fluid justify-content-start" method="post" action="/addBook">
 
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
 
-                <label for="lastName" class="form-label">Author</label>
+                <label for="author" class="form-label">Author</label>
                 <input type="text" class="form-control" id="author" name="author" required>
 
-                <label for="surname" class="form-label">ISBN</label>
-                <input type="text" class="form-control" id="isbn" name="isbn" required>
+                <label for="isbn" class="form-label">ISBN</label>
+                <input type="number" class="form-control" id="isbn" name="isbn" required>
 
-                <label for="exampleInputBook1" class="form-label">Price</label>
-                <input type="text" class="form-control" id="price" name="price" required>
+                <label for="price" class="form-label">Price</label>
+                <input type="number" class="form-control" id="price" name="price" required>
 
-                <label for="exampleInputBook1" class="form-label">Amount</label>
-                <input type="text" class="form-control" id="amt" name="amt" required>
+                <label for="amt" class="form-label">Amount</label>
+                <input type="number" class="form-control" id="amt" name="amt" required>
 
                 <button type="submit" class="btn btn-primary">Add book</button>
             </form>
