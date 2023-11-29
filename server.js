@@ -11,6 +11,7 @@ const Books = require('./models/books')
 const app = express();
 
 app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
 
 const PORT = 3000;
 const db = 'mongodb+srv://gamefortas:1ONEpiece1@cluster0.4xrlzbw.mongodb.net/book_shop'
@@ -21,7 +22,7 @@ mongoose
     .then((res) => console.log('Connected to DB'))
     .catch((e) => console.log(e));
 
-const createPath = (page) => path.resolve(__dirname, 'ejs-views', `${page}.ejs`);
+const createPath = (page) => path.resolve(__dirname, 'frontend', `${page}.html`);
 
 app.listen(PORT, (error) => {
     error ? console.log(error) : console.log(`listening port ${PORT}`);
@@ -34,80 +35,62 @@ app.use(express.static('styles'));
 app.use(methodOverride('_method'))
 
 
-//Find
-app.get('/', (req, res) => {
+
+app.get('/api/find', (req, res) => {
     Books
         .find(req.query)
         .sort({ book: 1 })
-        .then((books) => res.render(createPath('books'), { "books": books, "title": title }))
-        .catch((error) => {
-            console.log(error);
+        .lean()
+        .exec(function (err, books) {
+            if (err){
+                return res.status(500).send({"error": err})
+            }
+            return res.status(200).send(JSON.stringify(books));
         })
 });
 
-app.delete('/:id', (req, res) => {
+app.delete('/api/delete/', (req, res) => {
     Books
-        .findByIdAndDelete(req.params.id)
-        .then((result) => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-});
-
-
-// Edit Book
-app.get('/editBook/:id', (req, res) => {
-    Books
-        .findById(req.params.id)
-        .then(books => res.render(createPath('editBook'), { books }))
-        .catch((error) => {
-            console.log(error);
-        });
-});
-
-app.put('/editBook/:id', (req, res) => {
-    const { name, author, isbn, price, amt } = req.body;
-    const { id } = req.params;
-    Books
-        .findByIdAndUpdate(id, { name, author, isbn, price, amt })
-        .then(result => res.redirect('/'))
-        .catch((error) => {
-            console.log(error);
-        });
-});
-
-
-// Add Book
-app.get('/addBook', (req, res) => {
-    const error = req.query.hasOwnProperty("error") ? req.query["error"] : "";
-    console.log(error)
-    Books
-        .find()
-        .sort({ book: 1 })
-        .then((books) => res.render(createPath('addBook'), { "books": books, "title": title, "error": error }))
-        .catch((error) => {
-            console.log(error);
+        .deleteMany(req.query)
+        .exec(function (err, books) {
+            if (err){
+                return res.status(500).send({"error": err})
+            }
+            return res.status(200).send(JSON.stringify(books));
         })
 });
 
-app.post('/addBook', (req, res) => {
-    const { id, name, author, isbn, price, amt } = req.body;
-    Books.find({ "isbn": isbn }, function (err, results) {
-        if (err) { console.log(err) }
+
+
+app.put('/api/editBook/', (req, res) => {
+    Books
+        .findOneAndUpdate({"isbn": req.query.isbn}, req.query)
+        .exec(function (err, books) {
+            if (err){
+                return res.status(500).send({"error": err})
+            }
+            return res.status(200).send(JSON.stringify(books));
+        })
+});
+
+
+
+app.post('/api/addBook', (req, res) => {
+    Books.find({ "isbn": req.query.isbn }, function (err, results) {
+        if (err) { return res.status(500).send({"error": err}) }
         if (!results.length) {
-            const books = new Books({ id, name, author, isbn, price, amt });
-            books
-                .save()
-                .then((result) => res.redirect('/'))
-                .catch((error) => {
-                    console.log(error);
-                    res.redirect('/addBook?error=unknown error')
-                })
+            const book = new Books(req.query);
+            book.save()
+            return res.status(200).send(book.toJSON());
 
         }else{
-            res.redirect('/addBook?error=There is book with this ISBN')
+            return res.status(400).send({"error": "There is no book with this isbn"})
         }
-    })
+    });
 });
+
+// Frontend
+app.get('/', (req, res) => {
+    // res.render(createPath('index'))
+    res.render("index.html")
+})
