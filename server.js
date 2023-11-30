@@ -92,6 +92,17 @@ app.post('/api/addBook', (req, res) => {
 });
 
 // Frontend
-app.get('/', (req, res) => {
-    res.render("index.html")
-})
+
+const frontendPages = [
+    '/',
+    "/addBook",
+    "/editBook/:isbn"
+];
+
+
+
+frontendPages.forEach((path) => {
+    app.get(path, (req, res) => {
+      res.render('index.html');
+    });
+  });
