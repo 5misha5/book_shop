@@ -10,6 +10,8 @@ const Books = require('./models/books')
 
 const app = express();
 
+app.use('/static/frontend', express.static(path.join(__dirname, 'views/static')));
+app.set('views', path.join(__dirname, 'views/templates'));
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
@@ -91,6 +93,5 @@ app.post('/api/addBook', (req, res) => {
 
 // Frontend
 app.get('/', (req, res) => {
-    // res.render(createPath('index'))
     res.render("index.html")
 })
