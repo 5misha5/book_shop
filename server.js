@@ -36,11 +36,12 @@ app.use(express.static('styles'));
 
 app.use(methodOverride('_method'))
 
+app.use(express.json());
 
 
-app.get('/api/find', (req, res) => {
+app.post('/api/find', (req, res) => {
     Books
-        .find(req.query)
+        .find(req.body)
         .sort({ book: 1 })
         .lean()
         .exec(function (err, books) {

@@ -1,7 +1,12 @@
 
 
 async function findBooks(params = {}) {
-    return fetch("/api/find?" + new URLSearchParams(params))
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params)
+      };
+    return fetch("/api/find", requestOptions)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -11,7 +16,6 @@ async function findBooks(params = {}) {
 }
 
 async function deleteBookByISBN(isbn) {
-    console.log(isbn)
     const requestOptions = {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
